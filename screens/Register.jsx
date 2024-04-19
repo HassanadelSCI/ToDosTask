@@ -46,16 +46,25 @@ const Register = () => {
     if (!email.includes("@")) return setError("Invalid email");
     if (!email.includes(".")) return setError("Invalid email");
     if (email.includes(" ")) return setError("Invalid email");
-    setError("");
+    setError(" ");
     try {
       const credentials = await register(email, password);
       const authCredential = await getcred(email, password); // Await getcred
-      await AsyncStorage.setItem("credentials", JSON.stringify(authCredential));
-      setUser(JSON.stringify(authCredential));
-      router.navigate(`/home`);
+      if (credentials) {
+        await AsyncStorage.setItem(
+          "credentials",
+          JSON.stringify(authCredential)
+        );
+        setUser(JSON.stringify(authCredential));
+        router.navigate(`/home`);
+      }
     } catch (error) {
-      console.log("error", JSON.stringify(error));
-      setError(error);
+      if (error.code === "auth/email-already-in-use") {
+        setError("Email already in use");
+      } else {
+        console.log("error", JSON.stringify(error));
+        setError(error);
+      }
     }
   };
 

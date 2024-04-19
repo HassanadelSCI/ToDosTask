@@ -32,16 +32,38 @@ const Login = () => {
     seeAsync();
   }, []);
   const handleLogin = async () => {
+    if (!email || !password) return setError("Email and password are required");
+    if (!email.includes("@")) return setError("Invalid email");
+    if (!email.includes(".")) return setError("Invalid email");
+    if (email.includes(" ")) return setError("Invalid email");
+    if (password.length < 6)
+      return setError("Password must be at least 6 characters");
+    setError(" ");
     try {
+      if (!email || !password) {
+        setError("Email and password are required");
+        return;
+      }
       const credentials = await login(email, password);
       const authCredential = await getcred(email, password); // Await getcred
       // Serialize authCredential to JSON before storing in AsyncStorage
-      await AsyncStorage.setItem("credentials", JSON.stringify(authCredential));
-      setUser(JSON.stringify(authCredential));
-      router.navigate(`/home`);
+      if (credentials) {
+        await AsyncStorage.setItem(
+          "credentials",
+          JSON.stringify(authCredential)
+        );
+        setUser(JSON.stringify(authCredential));
+        router.navigate(`/home`);
+      }
     } catch (error) {
-      console.log("error", JSON.stringify(error));
-      setError(error.message); // Set error message
+      if (error.code === "auth/invalid-email") {
+        setError("wrong Email format");
+      } else if (error.code === "auth/invalid-credential") {
+        setError("wrong Email or password");
+      } else {
+        //console.log("error", JSON.stringify(error));
+        setError(error.message); // Set error message
+      }
     }
   };
 
