@@ -1,11 +1,16 @@
-import { View, Text } from "react-native";
+import { View, Text, Pressable, StyleSheet, CheckBox } from "react-native";
 import React from "react";
-import { StyleSheet } from "react-native-web";
 
-export default function Item({ text }) {
+export default function Item({ title, completed, id, onToggle, onDelete }) {
   return (
     <View style={styles.Item}>
-      <Text>{text}</Text>
+      <Pressable onPress={() => onToggle(id, !completed)}>
+        <CheckBox style={styles.checkBox} value={completed} />
+      </Pressable>
+      <Text>{title}</Text>
+      <Pressable onPress={() => onDelete(id)}>
+        <Text style={styles.deleteButton}>X</Text>
+      </Pressable>
     </View>
   );
 }
@@ -20,5 +25,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     minWidth: 300,
     maxWidth: 200,
+  },
+  checkBox: {
+    marginRight: 20,
+  },
+  title: {
+    fontSize: 18,
+    flex: 1,
+  },
+  deleteButton: {
+    color: "red",
+    fontWeight: "bold",
   },
 });

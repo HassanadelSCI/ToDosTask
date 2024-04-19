@@ -6,12 +6,32 @@ import { router } from "expo-router";
 import { useState } from "react";
 import Todos from "./Todos";
 import { logout } from "../firebase/auth";
-
+import { updateTodos } from "../firebase/auth";
 export default function Home() {
+  const [todoName, setTodoName] = useState("");
+  const [todos, setTodos] = useState([]);
   const signout = () => {
     logout();
     AsyncStorage.removeItem("credentials");
     router.navigate(`/account/login`);
+  };
+
+  const addTodo = async () => {
+    if (todoName.trim() !== "") {
+      let curId;
+      if (todos.length === 0) {
+        curId = 0;
+      } else {
+        curId = todos[todos.length - 1].id + 1;
+      }
+      const newTodoList = [
+        ...todos,
+        { title: todoName, completed: false, id: curId },
+      ];
+      setTodos(newTodoList);
+      await updateTodos(newTodoList);
+      setTodoName("");
+    }
   };
 
   return (
@@ -22,15 +42,18 @@ export default function Home() {
       <View style={styles.body}>
         <Text style={styles.welcome}>Welcome Home</Text>
         <Text style={styles.welcome}>Todo List</Text>
-        <View style={styles.addtodocont}>
-          <TextInput placeholder="Todos" style={styles.input} />
-          <MyButton onPress={signout} style={styles.add}>
+        {/* <View style={styles.addtodocont}>
+          <TextInput
+            placeholder="Enter Todo Name"
+            onChangeText={(text) => setTodoName(text)}
+            value={todoName}
+            style={styles.input}
+          />
+          <MyButton onPress={addTodo} style={styles.add}>
             add
           </MyButton>
-        </View>
-        <View>
-          <Todos />
-        </View>
+        </View> */}
+        <Todos />
       </View>
     </View>
   );

@@ -1,4 +1,4 @@
-import { auth } from "./Config";
+import { db, auth } from "./Config";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -9,6 +9,8 @@ import {
   FacebookAuthProvider,
   EmailAuthProvider,
 } from "firebase/auth";
+import { doc, setDoc, updateDoc, getDoc } from "firebase/firestore";
+
 // Listen for authentication state to change.
 onAuthStateChanged(auth, (user) => {
   if (user != null) {
@@ -19,8 +21,16 @@ onAuthStateChanged(auth, (user) => {
 });
 
 async function register(email, password) {
-  const cred = await createUserWithEmailAndPassword(auth, email, password);
-  return cred;
+  const credentials = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
+  await setDoc(doc(db, "users", auth.currentUser.uid), {
+    email: email,
+    Todos: [],
+  });
+  return credentials; // return some 'credentials' of the created user.
 }
 
 async function login(email, password) {
@@ -33,6 +43,13 @@ async function reset(email) {
 
 async function logout() {
   await auth.signOut();
+}
+
+async function updateTodos(todos) {
+  const washingtonRef = doc(db, "users", auth.currentUser.uid);
+  await updateDoc(washingtonRef, {
+    Todos: todos,
+  });
 }
 async function getcred(email, password) {
   const provider = EmailAuthProvider;
@@ -47,4 +64,12 @@ async function checkCredentail(prov) {
     return false;
   }
 }
-export { getcred, register, login, reset, logout, checkCredentail };
+export {
+  getcred,
+  register,
+  login,
+  reset,
+  logout,
+  updateTodos,
+  checkCredentail,
+};

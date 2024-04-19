@@ -87,7 +87,8 @@ const Register = () => {
         <MyButton onPress={handlePress} style={styles.register}>
           Register
         </MyButton>
-        <Text>{error}</Text>
+        <Text>{error.message}</Text>
+        {console.log(error.message)}
 
         <Pressable onPress={() => router.replace("/account/login")}>
           <Text style={styles.login}>Do you aleady have an account. Login</Text>

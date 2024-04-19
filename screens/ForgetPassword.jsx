@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import {
   View,
   TextInput,
-  Button,
   Text,
   Pressable,
   StyleSheet,
@@ -18,12 +17,22 @@ const Forget_Password = () => {
 
   const handlePress = async () => {
     try {
+      //should check if email exists in the database
+      if (email === "") {
+        setError("Please enter an email");
+        return;
+      }
+      setError(" ");
       await reset(email);
       console.log("Password reset");
       Alert.alert("Email for resetting password sent");
     } catch (error) {
-      console.log("error", JSON.stringify(error));
-      setError(error);
+      if (error.code === "auth/invalid-email") {
+        setError("Invalid email address");
+      } else {
+        console.log("error", JSON.stringify(error));
+        setError(error);
+      }
     }
   };
 
