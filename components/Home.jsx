@@ -13,6 +13,8 @@ export default function Home() {
   const signout = () => {
     logout();
     AsyncStorage.removeItem("credentials");
+    AsyncStorage.removeItem("id");
+
     router.navigate(`/account/login`);
   };
 

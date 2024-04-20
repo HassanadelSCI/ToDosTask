@@ -14,25 +14,28 @@ import {
 } from "react-native";
 import MyButton from "./MyButton";
 import Item from "./Item";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Todos = () => {
   const [todos, setTodos] = useState([]);
   const [todoName, setTodoName] = useState("");
   async function getTodos() {
-    console.log("auth.currentUser");
-    if (auth.currentUser) {
-      const docRef = doc(db, "users", auth.currentUser.uid);
-      console.log("docRef", docRef);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setTodos(docSnap.data().Todos);
-      } else {
-        console.log("No such document!");
-      }
+    const id = await AsyncStorage.getItem("id");
+    const id1 = JSON.parse(id);
+
+    const docRef = doc(db, "users", id1);
+    console.log("docRef", docRef);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      setTodos(docSnap.data().Todos);
+    } else {
+      console.log("No such document!");
     }
   }
 
   useEffect(() => {
+    console.log("hi");
+
     getTodos();
   }, []);
 

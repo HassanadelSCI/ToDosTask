@@ -55,6 +55,7 @@ const Register = () => {
           "credentials",
           JSON.stringify(authCredential)
         );
+        await AsyncStorage.setItem("id", JSON.stringify(credentials.user.uid));
         setUser(JSON.stringify(authCredential));
         router.navigate(`/home`);
       }
